@@ -1,0 +1,17 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/robots.txt/route": "/robots.txt",
+  "/sitemap.xml/route": "/sitemap.xml",
+  "/page": "/",
+  "/quote/page": "/quote",
+  "/blog/[slug]/page": "/blog/[slug]",
+  "/about/page": "/about",
+  "/blog/page": "/blog",
+  "/contact/page": "/contact",
+  "/privacy/page": "/privacy",
+  "/coverages/[slug]/page": "/coverages/[slug]",
+  "/services/page": "/services",
+  "/terms/page": "/terms",
+  "/coverages/page": "/coverages",
+  "/services/[slug]/page": "/services/[slug]"
+}
