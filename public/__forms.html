@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Netlify Forms</title>
+  <meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+  <!-- Netlify Forms decoy — registers form definitions at build time -->
+  <form name="quote" netlify netlify-honeypot="bot-field" hidden>
+    <input type="hidden" name="form-name" value="quote">
+    <input name="bot-field">
+    <input name="firstName">
+    <input name="lastName">
+    <input name="email" type="email">
+    <input name="phone" type="tel">
+    <input name="businessName">
+    <input name="state">
+    <input name="vendorType">
+    <input name="yearsInBusiness">
+    <input name="estimatedRevenue">
+    <textarea name="message"></textarea>
+    <button type="submit">Submit</button>
+  </form>
+  <form name="contact" netlify netlify-honeypot="bot-field" hidden>
+    <input type="hidden" name="form-name" value="contact">
+    <input name="bot-field">
+    <input name="name">
+    <input name="email" type="email">
+    <input name="phone" type="tel">
+    <input name="subject">
+    <textarea name="message"></textarea>
+    <button type="submit">Submit</button>
+  </form>
+</body>
+</html>
