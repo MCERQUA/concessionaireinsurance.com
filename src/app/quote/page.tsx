@@ -29,6 +29,8 @@ const vendorTypes = [
   "Other",
 ];
 
+const WEBHOOK_URL = `https://josh.jam-bot.com/social-api/api/leads/webhook/netlify?tenant=josh&site=concessionaireinsurance.com`;
+
 export default function QuotePage() {
   const [submitted, setSubmitted] = useState(false);
 
@@ -37,6 +39,9 @@ export default function QuotePage() {
     const form = e.currentTarget;
     const data = new FormData(form);
 
+    try {
+      await fetch(WEBHOOK_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ form_name: "quote", source: "concessionaireinsurance.com", ...Object.fromEntries(data.entries()) }) });
+    } catch {}
     try {
       await fetch("/", {
         method: "POST",
