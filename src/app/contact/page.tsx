@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import ContactForm from "@/components/ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact Us | Concessionaire Insurance | Contractors Choice Agency",
@@ -96,106 +97,7 @@ export default function ContactPage() {
               <h2 className="font-heading text-2xl font-bold text-slate-900 mb-8">
                 Send a Message
               </h2>
-              <form
-                name="contact"
-                method="POST"
-                data-netlify="true"
-                netlify-honeypot="bot-field"
-                className="space-y-5"
-                action="/contact?success=true"
-              >
-                <input type="hidden" name="form-name" value="contact" />
-                <p className="hidden">
-                  <label>Do not fill this out: <input name="bot-field" /></label>
-                </p>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="name">
-                      Full Name *
-                    </label>
-                    <input
-                      id="name"
-                      name="name"
-                      type="text"
-                      required
-                      className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-                      placeholder="Your name"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="email">
-                      Email Address *
-                    </label>
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      required
-                      className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-                      placeholder="you@example.com"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="phone">
-                    Phone Number
-                  </label>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-                    placeholder="(555) 000-0000"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="subject">
-                    Subject *
-                  </label>
-                  <select
-                    id="subject"
-                    name="subject"
-                    required
-                    className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white"
-                  >
-                    <option value="">Select a subject...</option>
-                    <option value="quote">Request a Quote</option>
-                    <option value="certificate">Certificate of Insurance Request</option>
-                    <option value="existing-policy">Question About Existing Policy</option>
-                    <option value="claims">Claims Assistance</option>
-                    <option value="general">General Question</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="message">
-                    Message *
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    required
-                    rows={5}
-                    className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 resize-none"
-                    placeholder="Tell us about your operation and how we can help..."
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-teal-500 hover:bg-teal-600 text-white py-4 rounded-xl font-semibold text-lg transition-colors"
-                >
-                  Send Message
-                </button>
-
-                <p className="text-xs text-slate-500 text-center">
-                  We typically respond within a few hours during business hours. For immediate assistance, call 844-967-5247.
-                </p>
-              </form>
+              <ContactForm />
             </div>
           </div>
         </div>
