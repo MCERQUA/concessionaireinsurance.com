@@ -552,9 +552,8 @@ export default function HomePage() {
       {/* STATS BAR */}
       <section className="py-16 bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             {[
-              { stat: "$2M+", label: "in Claims Paid" },
               { stat: "298+", label: "Active Clients" },
               { stat: "50", label: "States Licensed" },
               { stat: "15 Min", label: "Average Quote" },
