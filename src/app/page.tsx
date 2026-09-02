@@ -472,55 +472,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
-              Trusted by Vendors Nationwide
-            </h2>
-            <p className="text-lg text-slate-600">
-              Real feedback from concessionaires who rely on us for their insurance needs.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.map((t, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100"
-              >
-                <div className="flex items-center space-x-1 mb-4">
-                  {[...Array(5)].map((_, si) => (
-                    <Star key={si} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-                <p className="text-slate-600 leading-relaxed mb-6 text-sm">&ldquo;{t.text}&rdquo;</p>
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
-                    <span className="text-teal-600 font-bold text-sm">{t.name[0]}</span>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-slate-900 text-sm">{t.name}</div>
-                    <div className="text-slate-500 text-xs">{t.title} — {t.location}</div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* FAQ */}
       <section className="py-20 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
