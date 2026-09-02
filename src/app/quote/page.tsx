@@ -325,7 +325,45 @@ export default function QuotePage() {
                 By submitting, you agree to be contacted by Contractors Choice Agency regarding your
                 insurance quote. NPN: 8608479. Licensed in all 50 states.
               </p>
-            </form>
+            
+        {/* complete contractor field set — forms-required-fields.json */}
+        <div className="mb-4">
+          <label className="block text-sm font-bold mb-1">Street address</label>
+          <input type="text" name="street_address" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-bold mb-1">City</label>
+          <input type="text" name="city" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-bold mb-1">ZIP code</label>
+          <input type="text" name="zip" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-bold mb-1">Federal Employer ID Number (FEIN)</label>
+          <input type="text" name="fein" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-bold mb-1">Year business started</label>
+          <input type="number" name="year_business_started" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-bold mb-1">Description of business</label>
+          <textarea name="business_description" rows={3} className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"></textarea>
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-bold mb-1">Prior insurance carrier name</label>
+          <input type="text" name="prior_carrier_name" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-bold mb-1">Prior policy number</label>
+          <input type="text" name="prior_policy_number" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-bold mb-1">Prior policy expiration date</label>
+          <input type="date" name="prior_policy_expiration" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+        </div>
+</form>
           </div>
         </div>
       </section>
