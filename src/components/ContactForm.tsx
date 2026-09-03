@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 const WEBHOOK_URL = `https://josh.jam-bot.com/social-api/api/leads/webhook/netlify?tenant=josh&site=concessionaireinsurance.com`;
 
 export default function ContactForm() {
+  const [failed, setFailed] = useState(false);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
@@ -14,14 +15,19 @@ export default function ContactForm() {
       window.location.href = "/contact?success=true";
       return;
     }
+    // This form has a single delivery channel, so the visitor is only sent to the success
+    // page when the webhook actually accepted the lead. fetch() does not reject on a 4xx/5xx,
+    // so the status has to be checked explicitly.
     try {
-      await fetch(WEBHOOK_URL, {
+      const res = await fetch(WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ form_name: "contact", source: "concessionaireinsurance.com", ...formData }),
       });
+      if (!res.ok) throw new Error(String(res.status));
     } catch {
-      // Never block the existing success UX if the post fails.
+      setFailed(true);
+      return;
     }
     window.location.href = "/contact?success=true";
   };
@@ -116,6 +122,13 @@ export default function ContactForm() {
           placeholder="Tell us about your operation and how we can help..."
         />
       </div>
+
+      {failed && (
+        <div role="alert" className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800">
+          That did not send — your message is still here, nothing was lost. Please try again, or
+          call us at <a href="tel:8449675247" className="font-semibold underline">844-967-5247</a>.
+        </div>
+      )}
 
       <button
         type="submit"

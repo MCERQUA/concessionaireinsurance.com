@@ -33,26 +33,36 @@ const WEBHOOK_URL = `https://josh.jam-bot.com/social-api/api/leads/webhook/netli
 
 export default function QuotePage() {
   const [submitted, setSubmitted] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
 
+    const fields = Object.fromEntries(data.entries()) as Record<string, string>;
+    // The leads DB promotes `name`/`full_name` only; this form collects the name in two
+    // halves, so send a joined `name` in the payload as well. The UI is unchanged.
+    const fullName = `${fields.firstName ?? ""} ${fields.lastName ?? ""}`.trim();
+    const payload = fullName ? { ...fields, name: fullName } : fields;
+
+    // A lead is captured if EITHER channel accepted it. Only when both fail is the visitor
+    // told it did not send — never the reverse, and never a success we cannot back up.
+    let captured = false;
     try {
-      await fetch(WEBHOOK_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ form_name: "quote", source: "concessionaireinsurance.com", ...Object.fromEntries(data.entries()) }) });
+      const res = await fetch(WEBHOOK_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ form_name: "quote", source: "concessionaireinsurance.com", ...payload }) });
+      if (res.ok) captured = true;
     } catch {}
     try {
-      await fetch('/__forms.html', {
+      const res = await fetch('/__forms.html', {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(data as unknown as Record<string, string>).toString(),
+        body: new URLSearchParams(payload).toString(),
       });
-      setSubmitted(true);
-    } catch {
-      // Still show success in case of network issues on Netlify
-      setSubmitted(true);
-    }
+      if (res.ok) captured = true;
+    } catch {}
+    setFailed(!captured);
+    setSubmitted(captured);
   };
 
   if (submitted) {
@@ -313,6 +323,15 @@ export default function QuotePage() {
                   placeholder="Number of events per year, states you operate in, employees, specific coverage needs, current insurance issues, etc."
                 />
               </div>
+
+              {failed && (
+                <div role="alert" className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800">
+                  That did not send — your details are still here, nothing was lost. Please try
+                  again, or call us at{" "}
+                  <a href="tel:8449675247" className="font-semibold underline">844-967-5247</a>{" "}
+                  and we will take them over the phone.
+                </div>
+              )}
 
               <button
                 type="submit"
