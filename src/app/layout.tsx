@@ -40,6 +40,7 @@ export const metadata: Metadata = {
     images: ["/images/og-image.jpg"],
   },
   metadataBase: new URL("https://concessionaireinsurance.com"),
+  alternates: { canonical: "/" },
 };
 
 const jsonLd = {
