@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Phone, Mail, MapPin, Award, Globe, Clock, Users } from "lucide-react";
+import { Phone, Mail, MapPin, Award, Globe, Clock } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -74,11 +74,10 @@ export default function AboutPage() {
                   className="w-full h-80 object-cover"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
                   { icon: <Award className="w-5 h-5 text-teal-500" />, label: "Founded", value: "2005" },
                   { icon: <Globe className="w-5 h-5 text-teal-500" />, label: "Licensed In", value: "All 50 States" },
-                  { icon: <Users className="w-5 h-5 text-teal-500" />, label: "Active Clients", value: "298+" },
                   { icon: <Clock className="w-5 h-5 text-teal-500" />, label: "Quote Time", value: "15 Minutes" },
                 ].map((stat, i) => (
                   <div key={i} className="bg-slate-50 rounded-xl p-4 text-center">
