@@ -11,7 +11,6 @@ import {
   Box,
   Wine,
   ChefHat,
-  Star,
   Check,
   ChevronDown,
   ChevronUp,
@@ -73,26 +72,6 @@ const vendorTypes = [
   },
 ];
 
-const testimonials = [
-  {
-    name: "Maria R.",
-    title: "Food Truck Owner",
-    location: "Phoenix, AZ",
-    text: "Getting my food truck insured used to take days. Contractors Choice Agency had me covered in under an hour. They understand the mobile vendor business — they know exactly what certificates event organizers need and they produce them instantly.",
-  },
-  {
-    name: "Dave T.",
-    title: "Fair Booth Operator",
-    location: "Austin, TX",
-    text: "I've been vending at state fairs across Texas and Oklahoma for 12 years. Josh and his team have been my insurance specialists for the last 8. They handle all my additional insured requests without me having to follow up. That's rare.",
-  },
-  {
-    name: "Sandra K.",
-    title: "Carnival Concessionaire",
-    location: "Tampa, FL",
-    text: "Our operation travels to 40+ events per year across 6 states. Finding an agent who understands multi-state vendor compliance was a nightmare until we found Contractors Choice. They built us a program that works everywhere we go.",
-  },
-];
 
 const faqs = [
   {
