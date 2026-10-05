@@ -310,6 +310,22 @@ export default function QuotePage() {
                 </div>
               </div>
 
+              {/* Event coverage dates */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="event_coverage_date">
+                  Date of Coverage for Events
+                </label>
+                <input
+                  id="event_coverage_date"
+                  name="event_coverage_date"
+                  type="date"
+                  className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                />
+                <p className="text-xs text-slate-500 mt-1">
+                  The date (or first day) you need coverage for an event — leave blank if not event-specific.
+                </p>
+              </div>
+
               {/* Additional Info */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="message">
