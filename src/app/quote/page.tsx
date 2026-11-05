@@ -326,6 +326,59 @@ export default function QuotePage() {
                 </p>
               </div>
 
+              {/* Coverage details */}
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="effective_date">
+                    Requested Coverage Start Date
+                  </label>
+                  <input
+                    id="effective_date"
+                    name="effective_date"
+                    type="date"
+                    className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="limits_requested">
+                    Liability Limits Wanted
+                  </label>
+                  <select
+                    id="limits_requested"
+                    name="limits_requested"
+                    className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white"
+                  >
+                    <option value="">Select...</option>
+                    <option value="1M/2M">1M/2M</option>
+                    <option value="1M/3M">1M/3M</option>
+                    <option value="2M/4M">2M/4M</option>
+                    <option value="Not sure">Not sure</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="losses_3yr_count">
+                    Claims in the Last 3 Years
+                  </label>
+                  <input
+                    id="losses_3yr_count"
+                    name="losses_3yr_count"
+                    type="number"
+                    className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="losses_3yr_details">
+                  Claim Details: Dates, What Happened, Amounts
+                </label>
+                <textarea
+                  id="losses_3yr_details"
+                  name="losses_3yr_details"
+                  rows={3}
+                  className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 resize-none"
+                />
+              </div>
+
               {/* Additional Info */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="message">
