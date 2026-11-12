@@ -29,18 +29,52 @@ const vendorTypes = [
   "Other",
 ];
 
+const entityTypes = [
+  "Individual / Sole proprietorship",
+  "Partnership",
+  "Corporation",
+  "LLC",
+  "Joint venture",
+  "Other",
+];
+
+const coverageTypeOptions = [
+  "General Liability",
+  "Product Liability (Food / Completed Operations)",
+  "Commercial Auto",
+  "Inland Marine (Equipment & Generators)",
+  "Liquor Liability",
+  "Workers' Compensation",
+  "Umbrella / Excess",
+  "Other",
+];
+
 const WEBHOOK_URL = `https://josh.jam-bot.com/social-api/api/leads/webhook/netlify?tenant=josh&site=concessionaireinsurance.com`;
 
 export default function QuotePage() {
   const [submitted, setSubmitted] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [coverageError, setCoverageError] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
 
+    // coverageTypes is a checkbox group (ACORD "Coverage requested", required) — HTML5
+    // `required` on checkboxes would force ALL of them checked, which is not the intent.
+    // At least one must be checked; block submit with a visible message until it is.
+    const selectedCoverage = data.getAll("coverageTypes").map(String);
+    if (selectedCoverage.length === 0) {
+      setCoverageError(true);
+      return;
+    }
+    setCoverageError(false);
+
     const fields = Object.fromEntries(data.entries()) as Record<string, string>;
+    // Object.fromEntries only keeps the LAST value for a repeated key, so coverageTypes
+    // (multiple checkboxes sharing one name) has to be folded back in explicitly.
+    fields.coverageTypes = selectedCoverage.join(", ");
     // The leads DB promotes `name`/`full_name` only; this form collects the name in two
     // halves, so send a joined `name` in the payload as well. The UI is unchanged.
     const fullName = `${fields.firstName ?? ""} ${fields.lastName ?? ""}`.trim();
@@ -239,6 +273,39 @@ export default function QuotePage() {
                   </div>
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="entityType">
+                        Business Entity Type *
+                      </label>
+                      <select
+                        id="entityType"
+                        name="entityType"
+                        required
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white"
+                      >
+                        <option value="">Select entity type...</option>
+                        {entityTypes.map((t) => (
+                          <option key={t} value={t}>{t}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="yearBusinessStarted">
+                        Year Business Started *
+                      </label>
+                      <input
+                        id="yearBusinessStarted"
+                        name="yearBusinessStarted"
+                        type="number"
+                        required
+                        min={1900}
+                        max={2100}
+                        placeholder="e.g. 2023"
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="state">
                         Primary State *
                       </label>
@@ -255,12 +322,12 @@ export default function QuotePage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="vendorType">
+                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="tradeType">
                         Vendor Type *
                       </label>
                       <select
-                        id="vendorType"
-                        name="vendorType"
+                        id="tradeType"
+                        name="tradeType"
                         required
                         className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white"
                       >
@@ -289,12 +356,13 @@ export default function QuotePage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="estimatedRevenue">
-                        Estimated Annual Revenue
+                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="annualRevenue">
+                        Estimated Annual Revenue *
                       </label>
                       <select
-                        id="estimatedRevenue"
-                        name="estimatedRevenue"
+                        id="annualRevenue"
+                        name="annualRevenue"
+                        required
                         className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white"
                       >
                         <option value="">Select range...</option>
@@ -307,76 +375,351 @@ export default function QuotePage() {
                       </select>
                     </div>
                   </div>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="statesOfOperation">
+                        States Where You Operate *
+                      </label>
+                      <input
+                        id="statesOfOperation"
+                        name="statesOfOperation"
+                        type="text"
+                        required
+                        placeholder="e.g. Arizona, Nevada, California"
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                      />
+                      <p className="text-xs text-slate-500 mt-1">
+                        List every state you travel to for fairs, festivals, or events — not just your home state.
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="fullTimeEmployees">
+                        Full-Time Employees *
+                      </label>
+                      <input
+                        id="fullTimeEmployees"
+                        name="fullTimeEmployees"
+                        type="number"
+                        min={0}
+                        required
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="usesSubcontractors">
+                        Do you use subcontractors, sub-vendors, or staffing agencies? *
+                      </label>
+                      <select
+                        id="usesSubcontractors"
+                        name="usesSubcontractors"
+                        required
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white"
+                      >
+                        <option value="">Select...</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="operationType">
+                        How do you operate?
+                      </label>
+                      <select
+                        id="operationType"
+                        name="operationType"
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white"
+                      >
+                        <option value="">Select...</option>
+                        <option value="Fixed location">Fixed location only</option>
+                        <option value="Event-based / mobile">Event-based / mobile only</option>
+                        <option value="Both fixed location and events">Both fixed location and events</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="usesPropaneOrOpenFlame">
+                      Do you use propane, open flame cooking, deep fryers, or similar heat-producing equipment?
+                    </label>
+                    <select
+                      id="usesPropaneOrOpenFlame"
+                      name="usesPropaneOrOpenFlame"
+                      className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white"
+                    >
+                      <option value="">Select...</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
-              {/* Event coverage dates */}
+              {/* Business address + description */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="event_coverage_date">
-                  Date of Coverage for Events
-                </label>
-                <input
-                  id="event_coverage_date"
-                  name="event_coverage_date"
-                  type="date"
-                  className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-                />
-                <p className="text-xs text-slate-500 mt-1">
-                  The date (or first day) you need coverage for an event — leave blank if not event-specific.
-                </p>
+                <h3 className="font-heading font-semibold text-slate-900 mb-4 text-sm uppercase tracking-wider border-b border-slate-100 pb-2">
+                  Business Address &amp; Operations
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="streetAddress">
+                      Street Address *
+                    </label>
+                    <input
+                      id="streetAddress"
+                      name="streetAddress"
+                      type="text"
+                      required
+                      className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                    />
+                  </div>
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="city">
+                        City *
+                      </label>
+                      <input
+                        id="city"
+                        name="city"
+                        type="text"
+                        required
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="zip">
+                        ZIP Code *
+                      </label>
+                      <input
+                        id="zip"
+                        name="zip"
+                        type="text"
+                        required
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="fein">
+                        Federal Employer ID (FEIN)
+                      </label>
+                      <input
+                        id="fein"
+                        name="fein"
+                        type="text"
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="businessDescription">
+                      Describe Your Operations *
+                    </label>
+                    <textarea
+                      id="businessDescription"
+                      name="businessDescription"
+                      rows={3}
+                      required
+                      placeholder="What do you sell or serve, how, and where?"
+                      className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 resize-none"
+                    />
+                  </div>
+                </div>
               </div>
 
-              {/* Coverage details */}
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="effective_date">
-                    Requested Coverage Start Date
-                  </label>
-                  <input
-                    id="effective_date"
-                    name="effective_date"
-                    type="date"
-                    className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="limits_requested">
-                    Liability Limits Wanted
-                  </label>
-                  <select
-                    id="limits_requested"
-                    name="limits_requested"
-                    className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white"
-                  >
-                    <option value="">Select...</option>
-                    <option value="1M/2M">1M/2M</option>
-                    <option value="1M/3M">1M/3M</option>
-                    <option value="2M/4M">2M/4M</option>
-                    <option value="Not sure">Not sure</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="losses_3yr_count">
-                    Claims in the Last 3 Years
-                  </label>
-                  <input
-                    id="losses_3yr_count"
-                    name="losses_3yr_count"
-                    type="number"
-                    className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-                  />
+              {/* Prior insurance */}
+              <div>
+                <h3 className="font-heading font-semibold text-slate-900 mb-4 text-sm uppercase tracking-wider border-b border-slate-100 pb-2">
+                  Prior Insurance
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="currentlyInsured">
+                      Are you currently insured? *
+                    </label>
+                    <select
+                      id="currentlyInsured"
+                      name="currentlyInsured"
+                      required
+                      className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white"
+                    >
+                      <option value="">Select...</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="currentCarrier">
+                        Current / Prior Insurance Carrier
+                      </label>
+                      <input
+                        id="currentCarrier"
+                        name="currentCarrier"
+                        type="text"
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="currentPolicyExpiration">
+                        Current Policy Expiration Date
+                      </label>
+                      <input
+                        id="currentPolicyExpiration"
+                        name="currentPolicyExpiration"
+                        type="date"
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                      />
+                    </div>
+                  </div>
+                  {/* prior_policy_number: pre-existing field, left exactly as-is. Standing
+                      moratorium #1301 bars adding new DOB/driver's-license/SSN/policy-number
+                      fields — this one already existed before this audit, so per the
+                      "never delete" rule it is kept, unrenamed and unexpanded. */}
+                  <div>
+                    <label className="block text-sm font-bold mb-1">Prior policy number</label>
+                    <input type="text" name="prior_policy_number" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+                  </div>
                 </div>
               </div>
+
+              {/* Loss history */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="losses_3yr_details">
-                  Claim Details: Dates, What Happened, Amounts
-                </label>
-                <textarea
-                  id="losses_3yr_details"
-                  name="losses_3yr_details"
-                  rows={3}
-                  className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 resize-none"
-                />
+                <h3 className="font-heading font-semibold text-slate-900 mb-4 text-sm uppercase tracking-wider border-b border-slate-100 pb-2">
+                  Loss History
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="lossesLast3Years">
+                      Any claims or losses in the last 3 years? *
+                    </label>
+                    <select
+                      id="lossesLast3Years"
+                      name="lossesLast3Years"
+                      required
+                      className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white"
+                    >
+                      <option value="">Select...</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="lossCount">
+                      How many claims?
+                    </label>
+                    <input
+                      id="lossCount"
+                      name="lossCount"
+                      type="number"
+                      min={0}
+                      className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="lossDescription">
+                      Claim Details: Dates, What Happened, Amounts
+                    </label>
+                    <textarea
+                      id="lossDescription"
+                      name="lossDescription"
+                      rows={3}
+                      className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 resize-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Coverage requested */}
+              <div>
+                <h3 className="font-heading font-semibold text-slate-900 mb-4 text-sm uppercase tracking-wider border-b border-slate-100 pb-2">
+                  Coverage Requested
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <span className="block text-sm font-medium text-slate-700 mb-2">
+                      Coverage needed *
+                    </span>
+                    <div className="grid sm:grid-cols-2 gap-2">
+                      {coverageTypeOptions.map((c) => (
+                        <label key={c} className="flex items-center gap-2 text-sm text-slate-700">
+                          <input
+                            type="checkbox"
+                            name="coverageTypes"
+                            value={c}
+                            onChange={() => setCoverageError(false)}
+                            className="rounded border-slate-300 text-teal-500 focus:ring-teal-500"
+                          />
+                          {c}
+                        </label>
+                      ))}
+                    </div>
+                    {coverageError && (
+                      <p role="alert" className="text-sm text-red-700 mt-2">
+                        Please select at least one coverage type before submitting.
+                      </p>
+                    )}
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="requestedLimits">
+                        Liability Limits Wanted
+                      </label>
+                      <select
+                        id="requestedLimits"
+                        name="requestedLimits"
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white"
+                      >
+                        <option value="">Select...</option>
+                        <option value="1M/2M">1M/2M</option>
+                        <option value="1M/3M">1M/3M</option>
+                        <option value="2M/4M">2M/4M</option>
+                        <option value="Not sure">Not sure</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="desiredEffectiveDate">
+                        Requested Coverage Start Date *
+                      </label>
+                      <input
+                        id="desiredEffectiveDate"
+                        name="desiredEffectiveDate"
+                        type="date"
+                        required
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="event_coverage_date">
+                        Date of Coverage for Events
+                      </label>
+                      <input
+                        id="event_coverage_date"
+                        name="event_coverage_date"
+                        type="date"
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                      />
+                      <p className="text-xs text-slate-500 mt-1">
+                        The date (or first day) you need coverage for an event — leave blank if not event-specific.
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="additionalInsuredNeeded">
+                        Need Additional Insured certificates for event organizers/venues?
+                      </label>
+                      <select
+                        id="additionalInsuredNeeded"
+                        name="additionalInsuredNeeded"
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white"
+                      >
+                        <option value="">Select...</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Additional Info */}
@@ -389,7 +732,7 @@ export default function QuotePage() {
                   name="message"
                   rows={4}
                   className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 resize-none"
-                  placeholder="Number of events per year, states you operate in, employees, specific coverage needs, current insurance issues, etc."
+                  placeholder="Number of events per year, specific coverage needs, current insurance issues, etc."
                 />
               </div>
 
@@ -413,45 +756,7 @@ export default function QuotePage() {
                 By submitting, you agree to be contacted by Contractors Choice Agency regarding your
                 insurance quote. NPN: 8608479. Licensed in all 50 states.
               </p>
-            
-        {/* complete contractor field set — forms-required-fields.json */}
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-1">Street address</label>
-          <input type="text" name="street_address" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-1">City</label>
-          <input type="text" name="city" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-1">ZIP code</label>
-          <input type="text" name="zip" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-1">Federal Employer ID Number (FEIN)</label>
-          <input type="text" name="fein" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-1">Year business started</label>
-          <input type="number" name="year_business_started" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-1">Description of business</label>
-          <textarea name="business_description" rows={3} className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"></textarea>
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-1">Prior insurance carrier name</label>
-          <input type="text" name="prior_carrier_name" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-1">Prior policy number</label>
-          <input type="text" name="prior_policy_number" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-1">Prior policy expiration date</label>
-          <input type="date" name="prior_policy_expiration" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
-        </div>
-</form>
+            </form>
           </div>
         </div>
       </section>
