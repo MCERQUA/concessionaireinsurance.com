@@ -29,7 +29,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["Plus Jakarta Sans", "sans-serif"],
+        sans: ["'plusJakarta'", "sans-serif"],
         heading: ["Inter", "sans-serif"],
       },
     },

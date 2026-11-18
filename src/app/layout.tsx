@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import LenisProvider from "@/components/lenis-provider";
 
-const inter = Inter({
-  subsets: ["latin"],
+const inter = localFont({
+  src: [{ path: "./fonts/Inter-variable.woff2", weight: "100 900", style: "normal" }],
   variable: "--font-inter",
   display: "swap",
 });
 
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
+const plusJakarta = localFont({
+  src: [{ path: "./fonts/PlusJakartaSans-variable.woff2", weight: "200 800", style: "normal" }],
   variable: "--font-plus-jakarta",
   display: "swap",
 });
