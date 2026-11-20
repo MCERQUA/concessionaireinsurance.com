@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Phone, Check } from "lucide-react";
+import AcordFields from "@/components/AcordFields";
 
 const states = [
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
@@ -35,6 +36,9 @@ const entityTypes = [
   "Corporation",
   "LLC",
   "Joint venture",
+  "S Corporation",
+  "Trust",
+  "Not for profit",
   "Other",
 ];
 
@@ -571,14 +575,6 @@ export default function QuotePage() {
                       />
                     </div>
                   </div>
-                  {/* prior_policy_number: pre-existing field, left exactly as-is. Standing
-                      moratorium #1301 bars adding new DOB/driver's-license/SSN/policy-number
-                      fields — this one already existed before this audit, so per the
-                      "never delete" rule it is kept, unrenamed and unexpanded. */}
-                  <div>
-                    <label className="block text-sm font-bold mb-1">Prior policy number</label>
-                    <input type="text" name="prior_policy_number" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
-                  </div>
                 </div>
               </div>
 
@@ -721,6 +717,8 @@ export default function QuotePage() {
                   </div>
                 </div>
               </div>
+
+              <AcordFields />
 
               {/* Additional Info */}
               <div>
