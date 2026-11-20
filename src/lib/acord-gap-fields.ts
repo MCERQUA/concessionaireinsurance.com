@@ -130,7 +130,7 @@ export const ACORD_GAP_FIELD_NAMES: string[] = [
   'dba', 'entityTypeOther', 'physicalCounty', 'premisesCityLimits', 'premisesInterest',
   'mailingSameAsPhysical', 'mailingAddress', 'mailingCity', 'mailingState', 'mailingZip',
   'partTimeEmployees', 'annualPayroll', 'annualRevenueExact',
-  ...GL_LIMIT_FIELDS.map((f) => f.name),
+  'glTrigger', ...GL_LIMIT_FIELDS.map((f) => f.name),
   'lossLineOfBusiness', 'lossDate', 'lossAmountPaid', 'lossAmountReserved', 'lossHistoryStatus', 'lossAdditional',
   'additionalInsuredName', 'certificateHolderName', 'certificateHolderAddress',
   'percentSubcontracted', 'subsProvideCOI',
