@@ -53,6 +53,17 @@ const coverageTypeOptions = [
   "Other",
 ];
 
+const STATE_CODES: Record<string, string> = {
+  Alabama: "AL", Alaska: "AK", Arizona: "AZ", Arkansas: "AR", California: "CA", Colorado: "CO", Connecticut: "CT",
+  Delaware: "DE", Florida: "FL", Georgia: "GA", Hawaii: "HI", Idaho: "ID", Illinois: "IL", Indiana: "IN", Iowa: "IA",
+  Kansas: "KS", Kentucky: "KY", Louisiana: "LA", Maine: "ME", Maryland: "MD", Massachusetts: "MA", Michigan: "MI",
+  Minnesota: "MN", Mississippi: "MS", Missouri: "MO", Montana: "MT", Nebraska: "NE", Nevada: "NV", "New Hampshire": "NH",
+  "New Jersey": "NJ", "New Mexico": "NM", "New York": "NY", "North Carolina": "NC", "North Dakota": "ND", Ohio: "OH",
+  Oklahoma: "OK", Oregon: "OR", Pennsylvania: "PA", "Rhode Island": "RI", "South Carolina": "SC", "South Dakota": "SD",
+  Tennessee: "TN", Texas: "TX", Utah: "UT", Vermont: "VT", Virginia: "VA", Washington: "WA", "West Virginia": "WV",
+  Wisconsin: "WI", Wyoming: "WY",
+};
+
 const WEBHOOK_URL = `https://josh.jam-bot.com/social-api/api/leads/webhook/netlify?tenant=josh&site=concessionaireinsurance.com`;
 
 export default function QuotePage() {
@@ -92,7 +103,9 @@ export default function QuotePage() {
       if (t("mailingSameAsPhysical") !== "No") mirrors.address = t("streetAddress");
     }
     if (t("city")) mirrors.physicalCity = t("city");
-    if (t("state")) mirrors.physicalState = t("state");
+    // USPS two-letter code (the ACORD box is ~2 chars). Already-2-letter kept; unmappable stays blank.
+    const stCode = STATE_CODES[t("state")] ?? (/^[A-Za-z]{2}$/.test(t("state")) ? t("state").toUpperCase() : "");
+    if (stCode) mirrors.physicalState = stCode;
     if (t("zip")) mirrors.physicalZip = t("zip");
     if (t("businessDescription")) mirrors.locationDescription = t("businessDescription");
     const exact = t("annualRevenueExact").replace(/[$,\s]/g, "");
