@@ -84,21 +84,28 @@ export default function QuotePage() {
     const fullName = `${fields.firstName ?? ""} ${fields.lastName ?? ""}`.trim();
     const payload = fullName ? { ...fields, name: fullName } : fields;
 
-    // A lead is captured if EITHER channel accepted it. Only when both fail is the visitor
-    // told it did not send — never the reverse, and never a success we cannot back up.
+    // The leads webhook can answer 200 with {"stored": false} (lead NOT saved). Only a 2xx whose body
+    // does not say stored:false counts as captured; anything else falls back to Netlify Forms, so a
+    // lead is never reported as sent on a webhook that dropped it. Only when both fail is the visitor
+    // told it did not send.
     let captured = false;
     try {
       const res = await fetch(WEBHOOK_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ form_name: "quote", source: "concessionaireinsurance.com", ...payload }) });
-      if (res.ok) captured = true;
+      if (res.ok) {
+        const body = await res.json().catch(() => null);
+        captured = !(body && body.stored === false);
+      }
     } catch {}
-    try {
-      const res = await fetch('/__forms.html', {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(payload).toString(),
-      });
-      if (res.ok) captured = true;
-    } catch {}
+    if (!captured) {
+      try {
+        const res = await fetch('/__forms.html', {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams(payload).toString(),
+        });
+        if (res.ok) captured = true;
+      } catch {}
+    }
     setFailed(!captured);
     setSubmitted(captured);
   };
