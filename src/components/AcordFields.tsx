@@ -55,6 +55,8 @@ export default function AcordFields() {
       <fieldset className="border rounded-lg p-4 space-y-4">
         <legend className="px-2 text-sm font-bold">General liability limits requested</legend>
         <Sel name="glTrigger" label="Coverage trigger" options={["Occurrence", "Claims-made", "Not sure"]} />
+        <Sel name="glAggregateAppliesTo" label="General aggregate applies to" options={["Per Policy", "Per Project", "Per Location"]} />
+        <Sel name="billingPlan" label="Preferred billing plan" options={["Direct Bill", "Agency Bill"]} />
         {GL_LIMIT_FIELDS.map((f) => <Sel key={f.name} name={f.name} label={f.label} options={f.options} />)}
       </fieldset>
 

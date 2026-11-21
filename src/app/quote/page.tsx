@@ -82,7 +82,24 @@ export default function QuotePage() {
     // The leads DB promotes `name`/`full_name` only; this form collects the name in two
     // halves, so send a joined `name` in the payload as well. The UI is unchanged.
     const fullName = `${fields.firstName ?? ""} ${fields.lastName ?? ""}`.trim();
-    const payload = fullName ? { ...fields, name: fullName } : fields;
+    // ADD-ONLY canonical mirrors for the ACORD mapper, derived from what the visitor already typed (nobody is asked twice).
+    // Blank stays blank: a mirror is only added when its source is present and a faithful value.
+    const t = (k: string) => (fields[k] ?? "").trim();
+    const mirrors: Record<string, string> = {};
+    if (t("streetAddress")) {
+      mirrors.physicalAddress = t("streetAddress");
+      // `address` is the mailing street: only mirror it when the visitor did not say the mailing address differs
+      if (t("mailingSameAsPhysical") !== "No") mirrors.address = t("streetAddress");
+    }
+    if (t("city")) mirrors.physicalCity = t("city");
+    if (t("state")) mirrors.physicalState = t("state");
+    if (t("zip")) mirrors.physicalZip = t("zip");
+    if (t("businessDescription")) mirrors.locationDescription = t("businessDescription");
+    const exact = t("annualRevenueExact").replace(/[$,\s]/g, "");
+    if (exact !== "" && Number.isFinite(Number(exact)) && Number(exact) > 0) mirrors.lastGrossSales = exact;
+    if (t("percentSubcontracted") !== "") mirrors.workSubcontractedPercent = t("percentSubcontracted");
+    const base = { ...mirrors, ...fields };
+    const payload = fullName ? { ...base, name: fullName } : base;
 
     // The leads webhook can answer 200 with {"stored": false} (lead NOT saved). Only a 2xx whose body
     // does not say stored:false counts as captured; anything else falls back to Netlify Forms, so a
