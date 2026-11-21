@@ -26,7 +26,7 @@ export default function ContactForm() {
       });
       if (res.ok) {
         const j = await res.json().catch(() => null);
-        stored = !j || j.stored !== false;
+        stored = !!(j && j.ok === true && j.stored !== false);
       }
     } catch {}
     if (!stored) {

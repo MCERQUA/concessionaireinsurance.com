@@ -123,7 +123,7 @@ export default function QuotePage() {
       const res = await fetch(WEBHOOK_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ form_name: "quote", source: "concessionaireinsurance.com", ...payload }) });
       if (res.ok) {
         const body = await res.json().catch(() => null);
-        captured = !(body && body.stored === false);
+        captured = !!(body && body.ok === true && body.stored !== false);
       }
     } catch {}
     if (!captured) {
