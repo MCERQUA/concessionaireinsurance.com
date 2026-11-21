@@ -59,7 +59,6 @@ export default function QuotePage() {
   const [submitted, setSubmitted] = useState(false);
   const [failed, setFailed] = useState(false);
   const [coverageError, setCoverageError] = useState(false);
-  const [signatureError, setSignatureError] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -75,18 +74,6 @@ export default function QuotePage() {
       return;
     }
     setCoverageError(false);
-
-    // Typed e-signature + date (date must be today, +/- 1 day so a US evening, already tomorrow in UTC, passes).
-    const sigMs = Date.parse(`${String(data.get("signatureDate") ?? "")}T00:00:00Z`);
-    if (
-      !String(data.get("applicantSignature") ?? "").trim() ||
-      Number.isNaN(sigMs) ||
-      Math.abs(sigMs - Date.parse(new Date().toISOString().slice(0, 10) + "T00:00:00Z")) > 86400000
-    ) {
-      setSignatureError(true);
-      return;
-    }
-    setSignatureError(false);
 
     const fields = Object.fromEntries(data.entries()) as Record<string, string>;
     // Object.fromEntries only keeps the LAST value for a repeated key, so coverageTypes
@@ -745,30 +732,6 @@ export default function QuotePage() {
                   className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 resize-none"
                   placeholder="Number of events per year, specific coverage needs, current insurance issues, etc."
                 />
-              </div>
-
-              {/* Signature */}
-              <div>
-                <p className="text-sm text-slate-600 mb-3">Type your full legal name as your electronic signature and enter today&apos;s date.</p>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="applicantSignature">
-                      Applicant Signature (type your full legal name) *
-                    </label>
-                    <input id="applicantSignature" name="applicantSignature" type="text" required maxLength={80} autoComplete="off" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1" htmlFor="signatureDate">
-                      Signature Date (today) *
-                    </label>
-                    <input id="signatureDate" name="signatureDate" type="date" required className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-white" />
-                  </div>
-                </div>
-                {signatureError && (
-                  <p role="alert" className="text-sm text-red-700 mt-2">
-                    Please type your full legal name as your signature and enter today&apos;s date.
-                  </p>
-                )}
               </div>
 
               {failed && (
