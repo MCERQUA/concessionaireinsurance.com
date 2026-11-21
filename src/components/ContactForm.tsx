@@ -15,17 +15,31 @@ export default function ContactForm() {
       window.location.href = "/contact?success=true";
       return;
     }
-    // This form has a single delivery channel, so the visitor is only sent to the success
-    // page when the webhook actually accepted the lead. fetch() does not reject on a 4xx/5xx,
-    // so the status has to be checked explicitly.
+    // Webhook first; it answers 200 with stored:false when it did not store the lead, so only an ok
+    // response without that flag counts. Otherwise fall back to Netlify Forms; fail only if both fail.
+    let stored = false;
     try {
       const res = await fetch(WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ form_name: "contact", source: "concessionaireinsurance.com", ...formData }),
       });
-      if (!res.ok) throw new Error(String(res.status));
-    } catch {
+      if (res.ok) {
+        const j = await res.json().catch(() => null);
+        stored = !j || j.stored !== false;
+      }
+    } catch {}
+    if (!stored) {
+      try {
+        const fb = await fetch("/__forms.html", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({ ...formData, "form-name": "contact" }).toString(),
+        });
+        stored = fb.ok;
+      } catch {}
+    }
+    if (!stored) {
       setFailed(true);
       return;
     }
