@@ -136,3 +136,59 @@ export const ACORD_GAP_FIELD_NAMES: string[] = [
   'percentSubcontracted', 'subsProvideCOI',
   ...YES_NO_QUESTIONS.flatMap((q) => (q.explain ? [`yn_${q.key}`, `ynExplain_${q.key}`] : [`yn_${q.key}`])),
 ]
+
+// ---- Structured follow-ups shown when a question is answered Yes (same schema as the shared quote component;
+// ADD-ONLY: the ynExplain_<q> textareas above stay). Names: general_<q>__<field>, plus the single-name groups below.
+export interface DetailField { key: string; label: string; kind?: "text" | "date" | "percent" }
+export const detailName = (q: string, f: string) => `general_${q}__${f}`
+const LOSS_DETAIL: DetailField[] = [
+  { key: "occurenceDate", label: "Occurrence Date", kind: "date" },
+  { key: "explanation", label: "Explanation" },
+  { key: "resolution", label: "Resolution" },
+  { key: "resolutionDate", label: "Resolution Date", kind: "date" },
+]
+export const GENERAL_DETAILS: Record<string, DetailField[]> = {
+  applicantSubsidiary: [
+    { key: "parentName", label: "Parent Company Name" },
+    { key: "relationship", label: "Relationship Description" },
+    { key: "ownershipPercentage", label: "Ownership Percentage", kind: "percent" },
+  ],
+  applicantHasSubsidiaries: [
+    { key: "subsidiaryName", label: "Subsidiary Company Name" },
+    { key: "relationship", label: "Relationship Description" },
+    { key: "ownershipPercentage", label: "Ownership Percentage", kind: "percent" },
+  ],
+  otherInsurance: [{ key: "lineOfBusiness", label: "Line of Business" }],
+  negativeFinancialAction: LOSS_DETAIL,
+  judgementOrLien: LOSS_DETAIL,
+  safetyViolations: LOSS_DETAIL,
+  exposureFlammables: [{ key: "description", label: "Exposure Description" }],
+  pastAllegations: [{ key: "description", label: "Past Allegations Description" }],
+  indictedOrConvicted: [{ key: "description", label: "Indicted or Convicted Description" }],
+  businessInTrust: [{ key: "name", label: "Trust Name" }],
+  otherVentures: [{ key: "description", label: "Description of Other Ventures" }],
+  possessDrones: [{ key: "description", label: "Description of Drone Possession" }],
+  hireDroneOperators: [{ key: "description", label: "Description of Drone Hiring" }],
+}
+export const SAFETY_ELEMENTS = ["Safety Manual", "Safety Position", "Monthly Meetings", "OSHA Compliance", "Other"]
+export const POOL_FEATURES = ["Approved Fence", "Limited Access", "Diving Board", "Slide", "Life Guard"]
+export const RENT_EQUIPMENT_TYPES = ["Small Tools", "Large Equipment"]
+export const TERMINATION_REASONS: { key: string; label: string }[] = [
+  { key: "nonPayment", label: "Non-Payment" },
+  { key: "nonRenewal", label: "Non-Renewal" },
+  { key: "agentStopRepresenting", label: "Agent No Longer Represents Carrier" },
+  { key: "underwriting", label: "Underwriting" },
+]
+// Checkbox groups that post ONE comma-joined value under a single name.
+export const CHECK_GROUP_FIELDS = ["safetyProgramElements", "poolSafetyFeatures", "rentEquipmentTypes"]
+
+export const FOLLOW_UP_FIELD_NAMES: string[] = [
+  ...Object.entries(GENERAL_DETAILS).flatMap(([q, fs]) => fs.map((f) => detailName(q, f.key))),
+  ...TERMINATION_REASONS.map((r) => detailName("coverageTerminated", r.key)),
+  detailName("coverageTerminated", "conditionCorrected"),
+  detailName("coverageTerminated", "conditionCorrectedDescription"),
+  "safetyProgramElements", "safetyOtherText",
+  "athleticSportDescription", "athleticContactSport", "athleticSponsorshipExtent", "athleticTeamAgeGroup",
+  "poolConstruction", "poolSafetyFeatures",
+  "rentEquipmentTypes", "rentEquipmentInstructionGiven", "leaseEmployeesWorkersCompCarried",
+]

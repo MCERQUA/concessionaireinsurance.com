@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Phone, Check } from "lucide-react";
 import AcordFields from "@/components/AcordFields";
+import { CHECK_GROUP_FIELDS, TERMINATION_REASONS, detailName } from "@/lib/acord-gap-fields";
 
 const states = [
   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
@@ -90,6 +91,18 @@ export default function QuotePage() {
     // Object.fromEntries only keeps the LAST value for a repeated key, so coverageTypes
     // (multiple checkboxes sharing one name) has to be folded back in explicitly.
     fields.coverageTypes = selectedCoverage.join(", ");
+    // Same fold for the Yes-triggered checkbox groups (one comma-joined value under one name; absent when none ticked).
+    for (const g of CHECK_GROUP_FIELDS) {
+      const picked = data.getAll(g).map(String);
+      if (picked.length) fields[g] = picked.join(", ");
+    }
+    // Termination reasons are tick-boxes: when coverageTerminated is Yes, an unticked reason is stored No.
+    if (fields.yn_coverageTerminated === "Yes") {
+      for (const r of TERMINATION_REASONS) {
+        const k = detailName("coverageTerminated", r.key);
+        if (fields[k] !== "Yes") fields[k] = "No";
+      }
+    }
     // The leads DB promotes `name`/`full_name` only; this form collects the name in two
     // halves, so send a joined `name` in the payload as well. The UI is unchanged.
     const fullName = `${fields.firstName ?? ""} ${fields.lastName ?? ""}`.trim();
